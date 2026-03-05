@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yuzora-Yu / Pages</title>
+<title>Yuzora-Games 試作品置場</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Zen+Kaku+Gothic+New:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -115,6 +115,32 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.site-name{font-size:34px}.wrap{padding:36px 14px 60px}.search-box{width:100%}}
+
+/* USERNAME SWITCHER */
+.usr-trigger{position:fixed;bottom:0;left:0;width:80px;height:40px;cursor:default;z-index:200}
+.usr-panel{
+  position:fixed;bottom:20px;left:20px;z-index:300;
+  background:var(--s2);border:1px solid var(--border2);border-radius:4px;
+  padding:14px 16px;font-family:'JetBrains Mono',monospace;
+  display:none;flex-direction:column;gap:8px;min-width:260px;
+  animation:fadeUp .2s ease both;
+}
+.usr-panel.show{display:flex}
+.usr-panel-hdr{font-size:9px;letter-spacing:2px;color:var(--txt-d);text-transform:uppercase}
+.usr-row{display:flex;gap:6px}
+.usr-input{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--txt);
+  font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 9px;border-radius:2px}
+.usr-input:focus{outline:none;border-color:var(--acc-d)}
+.usr-go{background:none;border:1px solid var(--acc-d);color:var(--acc-l);
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:5px 12px;
+  cursor:pointer;border-radius:2px;transition:.12s;white-space:nowrap}
+.usr-go:hover{background:rgba(124,109,250,0.12)}
+.usr-current{font-size:10px;color:var(--txt-d)}
+.usr-current span{color:var(--acc-l)}
+.usr-reset{background:none;border:none;color:var(--txt-dd);font-family:'JetBrains Mono',monospace;
+  font-size:9px;cursor:pointer;padding:0;transition:.1s;text-align:left}
+.usr-reset:hover{color:var(--txt-d)}
+
 </style>
 </head>
 <body>
@@ -122,12 +148,12 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);
 
   <header>
     <div class="header-top">
-      <div class="site-name">YUZORA-YU</div>
+      <div class="site-name">YUZORA-GAMES</div>
       <div class="header-meta">
         <a class="gh-link" href="https://github.com/Yuzora-Yu" target="_blank">↗ GITHUB</a>
       </div>
     </div>
-    <div class="header-sub">// GitHub Pages — リポジトリ一覧 &nbsp;<span id="last-updated"></span></div>
+    <div class="header-sub">// 試作品置場 &nbsp;<span id="last-updated"></span></div>
   </header>
 
   <div class="tabs">
@@ -161,7 +187,7 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);
   </div>
 
   <footer>
-    <div class="footer-txt">YUZORA-YU.GITHUB.IO</div>
+    <div class="footer-txt">YUZORA-GAMES.GITHUB.IO</div>
     <div class="footer-txt">データソース: GitHub API</div>
   </footer>
 </div>
@@ -279,21 +305,88 @@ function timeAgo(dateStr) {
   return Math.floor(diff/2592000) + 'ヶ月前';
 }
 
-// ── Boot ──────────────────────────────────────────────────
-(async () => {
+
+// ── Username switcher ─────────────────────────────────────
+const DEFAULT_USER = 'Yuzora-Yu';
+let activeUser = DEFAULT_USER;
+
+function toggleUsrPanel() {
+  const p = document.getElementById('usrPanel');
+  p.classList.toggle('show');
+  if (p.classList.contains('show')) {
+    setTimeout(() => document.getElementById('usrInput').focus(), 50);
+  }
+}
+
+function switchUser() {
+  const val = document.getElementById('usrInput').value.trim();
+  if (!val) return;
+  activeUser = val;
+  document.getElementById('usrCurrent').textContent = val;
+  document.getElementById('usrReset').style.display = val === DEFAULT_USER ? 'none' : 'block';
+  document.getElementById('usrPanel').classList.remove('show');
+  document.getElementById('usrInput').value = '';
+  // Update header
+  document.querySelector('.site-name').textContent = val.toUpperCase();
+  document.getElementById('last-updated').textContent = '';
+  // Reload repos
+  document.getElementById('grid').innerHTML = `
+    <div class="card" style="opacity:.4"><div class="skel" style="height:18px;width:60%"></div><div class="skel" style="height:12px;width:90%;margin-top:8px"></div></div>
+    <div class="card" style="opacity:.2"><div class="skel" style="height:18px;width:45%"></div></div>`;
+  loadRepos(val);
+}
+
+function resetUser() {
+  activeUser = DEFAULT_USER;
+  document.getElementById('usrCurrent').textContent = DEFAULT_USER;
+  document.getElementById('usrReset').style.display = 'none';
+  document.querySelector('.site-name').textContent = 'YUZORA-GAMES';
+  loadRepos(DEFAULT_USER);
+}
+
+async function loadRepos(username) {
   const grid = document.getElementById('grid');
   try {
-    const repos = await fetchRepos();
-    allRepos    = await checkPages(repos);
-
+    const repos = await fetchReposFor(username);
+    allRepos = await checkPages(repos);
     const now = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'});
     document.getElementById('last-updated').textContent = `— ${now} 取得`;
-
     render();
   } catch(e) {
     grid.innerHTML = `<div class="status err">⚠ 取得失敗: ${e.message}</div>`;
   }
-})();
+}
+
+async function fetchReposFor(username) {
+  const repos = [];
+  let page = 1;
+  while (true) {
+    const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&page=${page}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status} — ユーザー "${username}" が見つかりません`);
+    const data = await res.json();
+    if (!data.length) break;
+    repos.push(...data);
+    if (data.length < 100) break;
+    page++;
+  }
+  return repos;
+}
+
+// ── Boot ──────────────────────────────────────────────────
+loadRepos(DEFAULT_USER);
 </script>
+
+<!-- Hidden username switcher (click bottom-left corner to open) -->
+<div class="usr-trigger" onclick="toggleUsrPanel()" title=""></div>
+<div class="usr-panel" id="usrPanel">
+  <div class="usr-panel-hdr">// ユーザー切替</div>
+  <div class="usr-current">現在: <span id="usrCurrent">Yuzora-Yu</span></div>
+  <div class="usr-row">
+    <input class="usr-input" id="usrInput" placeholder="username" onkeydown="if(event.key==='Enter')switchUser()">
+    <button class="usr-go" onclick="switchUser()">LOAD</button>
+  </div>
+  <button class="usr-reset" id="usrReset" onclick="resetUser()" style="display:none">← Yuzora-Yu に戻す</button>
+</div>
+
 </body>
 </html>
