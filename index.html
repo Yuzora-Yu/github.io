@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuzora-Yu / Pages</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Zen+Kaku+Gothic+New:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090b;--s1:#111114;--s2:#18181c;
+  --border:#26262e;--border2:#32323c;
+  --txt:#e2e2e8;--txt-d:#6b6b7e;--txt-dd:#32323c;
+  --acc:#7c6dfa;--acc-l:#a99ef5;--acc-d:#3d3480;
+  --grn:#4ade80;--ylw:#fbbf24;--red:#f87171;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Zen Kaku Gothic New',sans-serif}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:48px 48px;opacity:0.3;
+}
+body::after{
+  content:'';position:fixed;top:-300px;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse,rgba(124,109,250,0.10) 0%,transparent 70%);
+  pointer-events:none;
+}
+.wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:56px 24px 80px}
+
+/* HEADER */
+header{margin-bottom:56px;animation:fadeUp .5s ease both}
+.header-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px}
+.site-name{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:6px;line-height:1;
+  background:linear-gradient(120deg,var(--acc-d),var(--acc),var(--acc-l));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header-meta{display:flex;align-items:center;gap:10px;padding-bottom:4px}
+.gh-link{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;
+  color:var(--txt-d);text-decoration:none;border:1px solid var(--border2);
+  padding:5px 12px;border-radius:2px;transition:.15s}
+.gh-link:hover{border-color:var(--acc-d);color:var(--acc-l)}
+.header-sub{font-size:11px;color:var(--txt-d);letter-spacing:1px;font-family:'JetBrains Mono',monospace}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:28px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;
+  color:var(--txt-d);padding:8px 16px;cursor:pointer;border-bottom:2px solid transparent;
+  margin-bottom:-1px;transition:.12s;text-transform:uppercase}
+.tab:hover{color:var(--txt)}
+.tab.on{color:var(--acc-l);border-bottom-color:var(--acc)}
+
+/* FILTER / SORT */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-box{background:var(--s1);border:1px solid var(--border);color:var(--txt);
+  font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border-radius:2px;
+  width:220px;letter-spacing:.5px}
+.search-box:focus{outline:none;border-color:var(--acc-d)}
+.search-box::placeholder{color:var(--txt-dd)}
+.sort-btn{background:none;border:1px solid var(--border);color:var(--txt-d);
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:5px 12px;
+  cursor:pointer;border-radius:2px;transition:.12s}
+.sort-btn:hover,.sort-btn.on{border-color:var(--acc-d);color:var(--acc-l)}
+.repo-count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt-dd)}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:4px;
+  padding:18px 20px;display:flex;flex-direction:column;gap:10px;
+  position:relative;overflow:hidden;transition:border-color .15s,transform .15s,box-shadow .15s;
+  animation:fadeUp .4s ease both}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--acc-d),transparent);opacity:0;transition:.2s}
+.card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.4)}
+.card:hover::before{opacity:1}
+
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-name{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;color:var(--txt);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-badges{display:flex;gap:5px;flex-shrink:0}
+.badge{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;
+  padding:2px 7px;border-radius:2px}
+.badge-pages{background:rgba(74,222,128,0.12);color:var(--grn);border:1px solid rgba(74,222,128,0.25)}
+.badge-lang{background:rgba(124,109,250,0.10);color:var(--acc-l);border:1px solid rgba(124,109,250,0.2)}
+.badge-fork{background:rgba(107,107,126,0.15);color:var(--txt-d);border:1px solid var(--border)}
+
+.card-desc{font-size:12px;color:var(--txt-d);line-height:1.7;font-weight:300;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-desc.empty{color:var(--txt-dd);font-style:italic}
+
+.card-footer{display:flex;align-items:center;gap:12px;margin-top:auto}
+.card-stat{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt-dd);display:flex;align-items:center;gap:4px}
+.card-links{margin-left:auto;display:flex;gap:6px}
+.card-link{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;
+  text-decoration:none;padding:3px 9px;border-radius:2px;transition:.12s;border:1px solid var(--border)}
+.link-pages{color:var(--grn);border-color:rgba(74,222,128,0.25)}
+.link-pages:hover{background:rgba(74,222,128,0.1)}
+.link-repo{color:var(--txt-d)}
+.link-repo:hover{border-color:var(--border2);color:var(--txt)}
+
+/* SKELETON */
+.skel{background:linear-gradient(90deg,var(--s1) 25%,var(--s2) 50%,var(--s1) 75%);
+  background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:2px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* STATUS */
+.status{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-d);
+  letter-spacing:1px;padding:40px 0;text-align:center}
+.status.err{color:var(--red)}
+
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.footer-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt-dd);letter-spacing:1px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.site-name{font-size:34px}.wrap{padding:36px 14px 60px}.search-box{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-top">
+      <div class="site-name">YUZORA-YU</div>
+      <div class="header-meta">
+        <a class="gh-link" href="https://github.com/Yuzora-Yu" target="_blank">↗ GITHUB</a>
+      </div>
+    </div>
+    <div class="header-sub">// GitHub Pages — リポジトリ一覧 &nbsp;<span id="last-updated"></span></div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab on" onclick="setTab('all',this)">ALL</div>
+    <div class="tab" onclick="setTab('pages',this)">PAGES のみ</div>
+    <div class="tab" onclick="setTab('source',this)">ソースのみ</div>
+  </div>
+
+  <div class="toolbar">
+    <input class="search-box" id="search" placeholder="🔍  リポジトリを検索..." oninput="render()">
+    <button class="sort-btn on" id="sort-updated" onclick="setSort('updated',this)">更新順</button>
+    <button class="sort-btn" id="sort-stars" onclick="setSort('stars',this)">★ Stars</button>
+    <button class="sort-btn" id="sort-name" onclick="setSort('name',this)">名前順</button>
+    <span class="repo-count" id="repo-count"></span>
+  </div>
+
+  <div class="grid" id="grid">
+    <!-- skeletons -->
+    <div class="card" style="opacity:.4">
+      <div class="skel" style="height:18px;width:60%"></div>
+      <div class="skel" style="height:12px;width:90%"></div>
+      <div class="skel" style="height:12px;width:70%"></div>
+    </div>
+    <div class="card" style="opacity:.25">
+      <div class="skel" style="height:18px;width:45%"></div>
+      <div class="skel" style="height:12px;width:80%"></div>
+    </div>
+    <div class="card" style="opacity:.12">
+      <div class="skel" style="height:18px;width:55%"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-txt">YUZORA-YU.GITHUB.IO</div>
+    <div class="footer-txt">データソース: GitHub API</div>
+  </footer>
+</div>
+
+<script>
+const USERNAME = 'Yuzora-Yu';
+let allRepos = [];
+let currentTab  = 'all';
+let currentSort = 'updated';
+
+// ── Fetch all repos (handle pagination) ──────────────────
+async function fetchRepos() {
+  const repos = [];
+  let page = 1;
+  while (true) {
+    const res = await fetch(
+      `https://api.github.com/users/${USERNAME}/repos?per_page=100&page=${page}`
+    );
+    if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data.length) break;
+    repos.push(...data);
+    if (data.length < 100) break;
+    page++;
+  }
+  return repos;
+}
+
+// ── Check which repos have Pages enabled ─────────────────
+async function checkPages(repos) {
+  // GitHub API doesn't expose has_pages reliably in list endpoint,
+  // but the field IS in the repo object. Map it directly.
+  return repos.map(r => ({ ...r, _hasPages: r.has_pages }));
+}
+
+// ── Render ────────────────────────────────────────────────
+function render() {
+  const q    = document.getElementById('search').value.toLowerCase();
+  const grid = document.getElementById('grid');
+
+  let repos = allRepos.filter(r => {
+    if (currentTab === 'pages')  return r._hasPages;
+    if (currentTab === 'source') return !r._hasPages;
+    return true;
+  });
+
+  if (q) repos = repos.filter(r =>
+    r.name.toLowerCase().includes(q) ||
+    (r.description || '').toLowerCase().includes(q)
+  );
+
+  repos.sort((a, b) => {
+    if (currentSort === 'updated') return new Date(b.updated_at) - new Date(a.updated_at);
+    if (currentSort === 'stars')   return b.stargazers_count - a.stargazers_count;
+    if (currentSort === 'name')    return a.name.localeCompare(b.name);
+    return 0;
+  });
+
+  document.getElementById('repo-count').textContent = repos.length + ' repos';
+
+  if (!repos.length) {
+    grid.innerHTML = '<div class="status">— 見つかりませんでした —</div>';
+    return;
+  }
+
+  grid.innerHTML = repos.map((r, i) => {
+    const pagesUrl = `https://${USERNAME}.github.io/${r.name}/`;
+    const updatedAgo = timeAgo(r.updated_at);
+
+    const badgesHtml = [
+      r._hasPages  ? `<span class="badge badge-pages">PAGES</span>` : '',
+      r.language   ? `<span class="badge badge-lang">${r.language}</span>` : '',
+      r.fork       ? `<span class="badge badge-fork">FORK</span>` : '',
+    ].join('');
+
+    const linksHtml = [
+      r._hasPages ? `<a class="card-link link-pages" href="${pagesUrl}" target="_blank">↗ OPEN</a>` : '',
+      `<a class="card-link link-repo" href="${r.html_url}" target="_blank">REPO</a>`,
+    ].join('');
+
+    return `<div class="card" style="animation-delay:${Math.min(i*0.04,0.4)}s">
+      <div class="card-top">
+        <div class="card-name">${r.name}</div>
+        <div class="card-badges">${badgesHtml}</div>
+      </div>
+      <div class="card-desc${r.description ? '' : ' empty'}">${r.description || '説明なし'}</div>
+      <div class="card-footer">
+        <span class="card-stat">★ ${r.stargazers_count}</span>
+        <span class="card-stat">⟳ ${updatedAgo}</span>
+        <div class="card-links">${linksHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  render();
+}
+
+function setSort(sort, el) {
+  currentSort = sort;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  render();
+}
+
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr)) / 1000;
+  if (diff < 3600)    return Math.floor(diff/60) + '分前';
+  if (diff < 86400)   return Math.floor(diff/3600) + '時間前';
+  if (diff < 2592000) return Math.floor(diff/86400) + '日前';
+  return Math.floor(diff/2592000) + 'ヶ月前';
+}
+
+// ── Boot ──────────────────────────────────────────────────
+(async () => {
+  const grid = document.getElementById('grid');
+  try {
+    const repos = await fetchRepos();
+    allRepos    = await checkPages(repos);
+
+    const now = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'});
+    document.getElementById('last-updated').textContent = `— ${now} 取得`;
+
+    render();
+  } catch(e) {
+    grid.innerHTML = `<div class="status err">⚠ 取得失敗: ${e.message}</div>`;
+  }
+})();
+</script>
+</body>
+</html>
